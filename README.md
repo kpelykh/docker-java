@@ -4,11 +4,17 @@ Java API client for [Docker](http://docs.docker.io/ "Docker")
 
 Supports Docker Client API v1.3, Server version 0.5.0
 
+Java-7 branch is using new Java 7 API for file manipulations to keep metadata while building Dockerbuild file.
+With new API, there's *NO NEED* to explicitly set executable bit, e.g.
+
+run cp /tmp/testrun.sh /usr/local/bin/ && chmod +x /usr/local/bin/testrun.sh
+
+
 ## Build with Maven
 
 ###### Prerequisites:
 
-* Java 1.6+
+* Java 1.7+
 * Maven 3.0.5
 * Docker daemon running
 

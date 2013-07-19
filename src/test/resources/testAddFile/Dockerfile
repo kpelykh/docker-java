@@ -4,6 +4,6 @@ FROM      ubuntu
 
 add	./testrun.sh       /tmp/
 
-run cp /tmp/testrun.sh /usr/local/bin/ && chmod +x /usr/local/bin/testrun.sh
+run cp /tmp/testrun.sh /usr/local/bin/
 
 CMD ["testrun.sh"]
