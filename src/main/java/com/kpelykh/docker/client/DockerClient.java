@@ -315,8 +315,16 @@ public class DockerClient
 
 
     public ContainerCreateResponse createContainer(ContainerConfig config) throws DockerException {
+        return createContainer(config, null);
+    }
+
+    public ContainerCreateResponse createContainer(ContainerConfig config, String name) throws DockerException {
 
         WebResource webResource = client.resource(restEndpointUrl + "/containers/create");
+
+        if (StringUtils.isNotEmpty(name)) {
+            webResource.queryParam("name", name);
+        }
 
         try {
             LOGGER.trace("POST: " + webResource.toString());
