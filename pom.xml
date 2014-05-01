@@ -7,7 +7,7 @@
         <version>7</version>
     </parent>
 
-    <groupId>com.kpelykh</groupId>
+    <groupId>com.alexecollins</groupId>
     <artifactId>docker-java</artifactId>
     <packaging>jar</packaging>
     <version>0.8.2-SNAPSHOT</version>
@@ -135,6 +135,12 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
             <version>${slf4j-api.version}</version>
         </dependency>
 

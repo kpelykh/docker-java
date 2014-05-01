@@ -33,6 +33,15 @@ public class HostConfig {
     @JsonProperty("PublishAllPorts")
     private boolean publishAllPorts;
 
+    @JsonProperty("Dns")
+    private String dns;
+  
+    @JsonProperty("DnsSearch")
+    private String dnsSearch;
+    
+    @JsonProperty("VolumesFrom")
+    private String volumesFrom;
+    
     public HostConfig() {
         this.binds = null;
     }
@@ -44,10 +53,6 @@ public class HostConfig {
 
     public void setBinds(String[] binds) {
         this.binds = binds;
-    }
-    
-    public void setBinds(final BoundHostVolumes volumes) {
-        setBinds(volumes.asBinds());
     }
 
     public String getContainerIDFile() {
@@ -97,7 +102,31 @@ public class HostConfig {
     public void setPublishAllPorts(boolean publishAllPorts) {
         this.publishAllPorts = publishAllPorts;
     }
-
+    
+    public String getDns() {
+		return dns;
+	}
+    
+    public void setDns(String dns) {
+		this.dns = dns;
+	}
+    
+    public void setDnsSearch(String dnsSearch) {
+		this.dnsSearch = dnsSearch;
+	}
+    
+    public String getDnsSearch() {
+		return dnsSearch;
+	}
+    
+    public void setVolumesFrom(String volumesFrom) {
+		this.volumesFrom = volumesFrom;
+	}
+    
+    public String getVolumesFrom() {
+		return volumesFrom;
+	}
+    
     @Override
     public String toString() {
         return "HostConfig{" +
@@ -108,6 +137,7 @@ public class HostConfig {
                 ", portBindings=" + portBindings +
                 ", privileged=" + privileged +
                 ", publishAllPorts=" + publishAllPorts +
+                ", dns='" + dns + '\'' +
                 '}';
     }
 
