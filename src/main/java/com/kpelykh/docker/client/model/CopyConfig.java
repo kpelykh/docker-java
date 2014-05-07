@@ -1,6 +1,7 @@
 package com.kpelykh.docker.client.model;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Configuration object for copy command.
