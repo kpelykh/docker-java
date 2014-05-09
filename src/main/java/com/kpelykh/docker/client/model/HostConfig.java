@@ -32,11 +32,22 @@ public class HostConfig {
 
     @JsonProperty("PublishAllPorts")
     private boolean publishAllPorts;
+    
+    @JsonProperty("Dns")
+    private String[] dns;
+    
+    @JsonProperty("DnsSearch")
+    private String[] dnsSearch;
 
+    @JsonProperty("VolumesFrom")
+    private String[] volumesFrom;
+    
+    @JsonProperty("NetworkMode")
+    private String networkMode;
+    
     public HostConfig() {
         this.binds = null;
     }
-
 
     public String[] getBinds() {
         return binds;
@@ -93,6 +104,38 @@ public class HostConfig {
     public void setPublishAllPorts(boolean publishAllPorts) {
         this.publishAllPorts = publishAllPorts;
     }
+    
+    public String[] getDns() {
+		return dns;
+	}
+    
+    public void setDns(String[] dns) {
+		this.dns = dns;
+	}
+    
+    public String[] getDnsSearch() {
+		return dnsSearch;
+	}
+    
+    public void setDnsSearch(String[] dnsSearch) {
+		this.dnsSearch = dnsSearch;
+	}
+    
+    public String[] getVolumesFrom() {
+		return volumesFrom;
+	}
+    
+    public void setVolumesFrom(String[] volumesFrom) {
+		this.volumesFrom = volumesFrom;
+	}
+    
+    public String getNetworkMode() {
+		return networkMode;
+	}
+    
+    public void setNetworkMode(String networkMode) {
+		this.networkMode = networkMode;
+	}
 
     @Override
     public String toString() {
@@ -103,7 +146,11 @@ public class HostConfig {
                 ", links=" + Arrays.toString(links) +
                 ", portBindings=" + portBindings +
                 ", privileged=" + privileged +
-                ", publishAllPorts=" + publishAllPorts +
+                ", publishAllPorts=" + publishAllPorts + '\'' +
+                ", dns=" + Arrays.toString(dns) + '\'' +
+                ", dnsSearch=" + Arrays.toString(dnsSearch) + '\'' +
+                ", volumesFrom=" + Arrays.toString(volumesFrom) + '\'' +
+                ", networkMode=" + networkMode + 
                 '}';
     }
 
