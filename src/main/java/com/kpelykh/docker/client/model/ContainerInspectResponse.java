@@ -60,7 +60,16 @@ public class ContainerInspectResponse {
 
     @JsonProperty("Driver")
     private String driver;
+    
+    @JsonProperty("ExecDriver")
+    private String execDriver;
+    
+    @JsonProperty("MountLabel")
+    private String mountLabel;
 
+    @JsonProperty("ProcessLabel")
+    private String processLabel;
+    
     @JsonProperty("HostConfig")
     private HostConfig hostConfig;
 
@@ -191,10 +200,34 @@ public class ContainerInspectResponse {
     public void setDriver(String driver) {
         this.driver = driver;
     }
+    
+    public String getExecDriver() {
+		return execDriver;
+	}
+    
+    public void setExecDriver(String execDriver) {
+		this.execDriver = execDriver;
+	}
+    
+    public String getMountLabel() {
+		return mountLabel;
+	}
+    
+    public void setMountLabel(String mountLabel) {
+		this.mountLabel = mountLabel;
+	}
 
     public HostConfig getHostConfig() {
         return hostConfig;
     }
+    
+    public String getProcessLabel() {
+		return processLabel;
+	}
+    
+    public void setProcessLabel(String processLabel) {
+		this.processLabel = processLabel;
+	}
 
     public void setHostConfig(HostConfig hostConfig) {
         this.hostConfig = hostConfig;

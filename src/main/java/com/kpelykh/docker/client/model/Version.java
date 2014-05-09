@@ -27,6 +27,9 @@ public class Version {
 
     @JsonProperty("Os")
     private String operatingSystem;
+    
+    @JsonProperty("ApiVersion")
+    private String  apiVersion;
 
 
     public String getVersion() {
@@ -76,11 +79,20 @@ public class Version {
     public void setOperatingSystem(String operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
+    
+    public String getApiVersion() {
+		return apiVersion;
+	}
+    
+    public void setApiVersion(String apiVersion) {
+		this.apiVersion = apiVersion;
+	}
 
     @Override
     public String toString() {
         return "Version{" +
-                "version='" + version + '\'' +
+        		"apiVersion='" + apiVersion + '\'' +
+                ", version='" + version + '\'' +
                 ", gitCommit='" + gitCommit + '\'' +
                 ", goVersion='" + goVersion + '\'' +
                 ", kernelVersion='" + kernelVersion + '\'' +

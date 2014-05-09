@@ -65,6 +65,7 @@ public class DockerClient
         HttpClient httpClient = new DefaultHttpClient(cm);
         client = new ApacheHttpClient4(new ApacheHttpClient4Handler(httpClient, null, false), clientConfig);
 
+        client.setReadTimeout(1000);
         //Experimental support for unix sockets:
         //client = new UnixSocketClient(clientConfig);
 
