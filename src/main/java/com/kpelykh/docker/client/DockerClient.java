@@ -1,8 +1,9 @@
 package com.kpelykh.docker.client;
 
 import com.google.common.base.Preconditions;
+import com.kpelykh.docker.client.command.BuildCommand;
+import com.kpelykh.docker.client.command.input.BuildInput;
 import com.kpelykh.docker.client.model.*;
-import com.kpelykh.docker.client.utils.CompressArchiveUtil;
 import com.kpelykh.docker.client.utils.JsonClientFilter;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.WebResource.Builder;
@@ -14,7 +15,6 @@ import com.sun.jersey.client.apache4.ApacheHttpClient4;
 import com.sun.jersey.client.apache4.ApacheHttpClient4Handler;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang.StringUtils;
@@ -37,9 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
@@ -54,6 +52,7 @@ public class DockerClient {
 	private Client client;
 	private String restEndpointUrl;
 	private AuthConfig authConfig;
+    private BuildCommand buildCommand;
 
 	public DockerClient() {
 		this("http://localhost:4243");
@@ -83,6 +82,8 @@ public class DockerClient {
 
 		client.addFilter(new JsonClientFilter());
 		client.addFilter(new LoggingFilter());
+
+        buildCommand = new BuildCommand(client, restEndpointUrl);
 	}
 
 	public void setCredentials(String username, String password, String email) {
@@ -790,83 +791,7 @@ public class DockerClient {
 	}
 
 	public ClientResponse build(File dockerFolder, String tag, boolean noCache) throws DockerException {
-		Preconditions.checkNotNull(dockerFolder, "Folder is null");
-		Preconditions.checkArgument(dockerFolder.exists(), "Folder %s doesn't exist", dockerFolder);
-		Preconditions.checkState(new File(dockerFolder, "Dockerfile").exists(), "Dockerfile doesn't exist in " + dockerFolder);
-
-		//We need to use Jersey HttpClient here, since ApacheHttpClient4 will not add boundary filed to
-		//Content-Type: multipart/form-data; boundary=Boundary_1_372491238_1372806136625
-
-		MultivaluedMap<String, String> params = new MultivaluedMapImpl();
-		params.add("t", tag);
-		if (noCache) {
-			params.add("nocache", "true");
-		}
-
-		// ARCHIVE TAR
-		String archiveNameWithOutExtension = UUID.randomUUID().toString();
-
-		File dockerFolderTar = null;
-
-		try {
-			File dockerFile = new File(dockerFolder, "Dockerfile");
-			List<String> dockerFileContent = FileUtils.readLines(dockerFile);
-
-			if (dockerFileContent.size() <= 0) {
-				throw new DockerException(String.format("Dockerfile %s is empty", dockerFile));
-			}
-
-			List<File> filesToAdd = new ArrayList<File>();
-			filesToAdd.add(dockerFile);
-
-			for (String cmd : dockerFileContent) {
-				if (StringUtils.startsWithIgnoreCase(cmd.trim(), "ADD")) {
-					String addArgs[] = StringUtils.split(cmd, " \t");
-					if (addArgs.length != 3) {
-						throw new DockerException(String.format("Wrong format on line [%s]", cmd));
-					}
-
-					File src = new File(addArgs[1]);
-					if (!src.isAbsolute()) {
-						src = new File(dockerFolder, addArgs[1]).getCanonicalFile();
-					}
-
-					if (!src.exists()) {
-						throw new DockerException(String.format("Source file %s doesn't exist", src));
-					}
-					if (src.isDirectory()) {
-						filesToAdd.addAll(FileUtils.listFiles(src, null, true));
-					} else {
-						filesToAdd.add(src);
-					}
-				}
-			}
-
-			dockerFolderTar = CompressArchiveUtil.archiveTARFiles(dockerFolder, filesToAdd, archiveNameWithOutExtension);
-
-		} catch (IOException ex) {
-			FileUtils.deleteQuietly(dockerFolderTar);
-			throw new DockerException("Error occurred while preparing Docker context folder.", ex);
-		}
-
-		WebResource webResource = client.resource(restEndpointUrl + "/build").queryParams(params);
-
-		try {
-			LOGGER.trace("POST: {}", webResource);
-			return webResource
-					.type("application/tar")
-					.accept(MediaType.TEXT_PLAIN)
-					.post(ClientResponse.class, FileUtils.openInputStream(dockerFolderTar));
-		} catch (UniformInterfaceException exception) {
-			if (exception.getResponse().getStatus() == 500) {
-				throw new DockerException("Server error", exception);
-			} else {
-				throw new DockerException(exception);
-			}
-		} catch (IOException e) {
-			throw new DockerException(e);
-		} finally {
-			FileUtils.deleteQuietly(dockerFolderTar);
-		}
+        BuildInput input = new BuildInput(dockerFolder, tag, noCache);
+        return buildCommand.execute(input);
 	}
 }
