@@ -19,12 +19,19 @@
 package com.kpelykh.docker.client.model;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,6 +39,7 @@ import java.util.List;
  *
  */
 @JsonSerialize(using=BoundHostVolumes.Serializer.class)
+@JsonDeserialize(using=BoundHostVolumes.Deserializer.class)
 public class BoundHostVolumes {
     private static final String[] STRING_ARRAY = new String[0];
     private final String[] dests, binds;
@@ -88,5 +96,72 @@ public class BoundHostVolumes {
                 throws IOException {
             volumes.writeVolumes(jg);
         }       
+    }
+
+    public static class Deserializer extends JsonDeserializer<BoundHostVolumes> {
+        @Override
+        public BoundHostVolumes deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            BoundHostVolumes volumes = null;
+ /*
+            boolean started = false;
+            String name, map;
+            ArrayList<String> specs = new ArrayList<String>();
+
+            while ( !jsonParser.isClosed() ) {
+                JsonToken token = jsonParser.nextToken();
+                if ( token != null ) {
+                    System.out.println( token );
+                    if ( !started ) {
+                        if ( JsonToken.START_OBJECT.equals(token) ) {
+                            started = true;
+                        }
+                        else if ( JsonToken.VALUE_NULL.equals(token) ) {
+                            specs = null;
+                            break;
+                        }
+                    }
+                    else {
+                        if ( JsonToken.FIELD_NAME.equals(token) ) {
+                            name = jsonParser.getCurrentName();
+                            specs.add( name );
+                            token = jsonParser.nextToken();
+                            if ( JsonToken.START_OBJECT.equals(token) ) {
+                                jsonParser.skipChildren();
+                            }
+                        }
+                        else if ( JsonToken.END_OBJECT.equals(token) ) {
+                            break;
+                        }
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+
+            if ( specs != null ) {
+                volumes = new BoundHostVolumes( specs );
+            }
+ */
+            while ( !jsonParser.isClosed() ) {
+                JsonToken token = jsonParser.getCurrentToken();
+                if (token != null) {
+                    if (JsonToken.START_OBJECT.equals(token) || JsonToken.START_ARRAY.equals(token)) {
+                        jsonParser.skipChildren();
+                        break;
+                    }
+                    else if ( JsonToken.END_OBJECT.equals(token) || JsonToken.END_ARRAY.equals(token) ) {
+                        break;
+                    }
+                    else {
+                        System.out.println( "Unexpected volume object token: " + token + ", " +
+                                                "name=" + jsonParser.getCurrentName() );
+                        jsonParser.nextToken();
+                    }
+                }
+            }
+            volumes = new BoundHostVolumes( new ArrayList<String>() );
+            return volumes;
+        }
     }
 }
